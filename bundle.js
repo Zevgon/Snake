@@ -9566,6 +9566,24 @@ var DIFFICULTIES = [{
   value: '350'
 }];
 
+var TARGET_TYPES = [{
+  probability: 20,
+  segments: 4,
+  class: 'four-point'
+}, {
+  probability: 10,
+  segments: 3,
+  class: 'three-point'
+}, {
+  probability: 5,
+  segments: 2,
+  class: 'two-point'
+}, {
+  probability: 1,
+  segments: 1,
+  class: 'one-point'
+}];
+
 var Row = function Row(_ref) {
   var i = _ref.i,
       set = _ref.set,
@@ -9576,8 +9594,8 @@ var Row = function Row(_ref) {
   for (var j = 0; j < width; j++) {
     if (set.has([i, j].toString())) {
       row.push(_react2.default.createElement('div', { className: 'snake box' }));
-    } else if ([i, j].toString() === target.toString()) {
-      row.push(_react2.default.createElement('div', { className: 'target box' }));
+    } else if ([i, j].toString() === target.pos.toString()) {
+      row.push(_react2.default.createElement('div', { className: target.class + ' box' }));
     } else {
       row.push(_react2.default.createElement('div', { className: 'empty box' }));
     }
@@ -9637,6 +9655,7 @@ var App = function (_React$Component) {
         this.highScore = 0;
       }
       this.score = 0;
+      this.segmentsToAdd = 0;
       if (firstTime) {
         this.state = {
           height: this.props.height,
@@ -9698,11 +9717,34 @@ var App = function (_React$Component) {
       return valids;
     }
   }, {
+    key: 'getNewTargetType',
+    value: function getNewTargetType() {
+      var randNum = parseInt(Math.random() * 10000);
+      var ret = void 0;
+      for (var i in TARGET_TYPES) {
+        var type = TARGET_TYPES[i];
+        if (randNum % type.probability === 0) {
+          ret = type;
+          break;
+        }
+      }
+      if (ret) {
+        return ret;
+      } else {
+        throw 'oops! Something went wrong when getting new target type';
+      }
+    }
+  }, {
     key: 'getNewTarget',
     value: function getNewTarget() {
       var validPoses = this.getValidPoses();
       var randIdx = parseInt(Math.random() * validPoses.length);
-      return validPoses[randIdx];
+      var type = this.getNewTargetType();
+      var target = {};
+      target.pos = validPoses[randIdx];
+      target.segments = type.segments;
+      target.class = type.class;
+      return target;
     }
   }, {
     key: 'getNewPos',
@@ -9740,18 +9782,24 @@ var App = function (_React$Component) {
     key: 'move',
     value: function move() {
       var head = this.queue[this.queue.length - 1];
-      if (head.toString() === this.target.toString()) {
+      if (head.toString() === this.target.pos.toString()) {
+        this.segmentsToAdd += this.target.segments;
+        this.score += this.difficultyToScore() * this.target.segments;
         this.target = this.getNewTarget();
-        this.score += this.difficultyToScore();
         if (this.score > this.highScore) {
           this.highScore = this.score;
         }
-      } else {
+      }
+
+      this.segmentsToAdd -= 1;
+      if (this.segmentsToAdd < 0) {
+        this.segmentsToAdd = 0;
         var tail = this.queue.shift();
         if (!this.set.delete(tail.toString())) {
           throw 'oops! set does not match queue';
         }
       }
+
       var newHead = this.getNewPos(head);
       if (!this.validPos(newHead)) {
         clearInterval(this.interval);

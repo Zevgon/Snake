@@ -47,8 +47,20 @@ button {
   justify-content: space-between;
 }
 
-.target {
+.one-point {
   background-color: blue;
+}
+
+.two-point {
+  background-color: green;
+}
+
+.three-point {
+  background-color: yellow;
+}
+
+.four-point {
+  background-color: violet;
 }
 
 #start {

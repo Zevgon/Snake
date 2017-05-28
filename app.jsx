@@ -33,13 +33,36 @@ const DIFFICULTIES = [
   },
 ]
 
+const TARGET_TYPES = [
+  {
+    probability: 20,
+    segments: 4,
+    class: 'four-point',
+  },
+  {
+    probability: 10,
+    segments: 3,
+    class: 'three-point',
+  },
+  {
+    probability: 5,
+    segments: 2,
+    class: 'two-point',
+  },
+  {
+    probability: 1,
+    segments: 1,
+    class: 'one-point',
+  }
+]
+
 const Row = ({i, set, width, target}) => {
   let row = [];
   for (let j = 0; j < width; j++) {
     if (set.has([i, j].toString())) {
       row.push((<div className="snake box"></div>));
-    } else if ([i, j].toString() === target.toString()) {
-      row.push((<div className="target box"></div>));
+    } else if ([i, j].toString() === target.pos.toString()) {
+      row.push((<div className={`${target.class} box`}></div>));
     } else {
       row.push((<div className="empty box"></div>));
     }
@@ -89,6 +112,7 @@ export default class App extends React.Component {
       this.highScore = 0;
     }
     this.score = 0;
+    this.segmentsToAdd = 0;
     if (firstTime) {
       this.state = {
         height: this.props.height,
@@ -143,10 +167,32 @@ export default class App extends React.Component {
     return valids;
   }
 
+  getNewTargetType() {
+    const randNum = parseInt(Math.random() * 10000);
+    let ret;
+    for (let i in TARGET_TYPES) {
+      const type = TARGET_TYPES[i];
+      if (randNum % type.probability === 0) {
+        ret = type;
+        break;
+      }
+    }
+    if (ret) {
+      return ret;
+    } else {
+      throw 'oops! Something went wrong when getting new target type';
+    }
+  }
+
   getNewTarget() {
     const validPoses = this.getValidPoses();
     const randIdx = parseInt(Math.random() * validPoses.length);
-    return validPoses[randIdx];
+    const type = this.getNewTargetType();
+    let target = {};
+    target.pos = validPoses[randIdx];
+    target.segments = type.segments;
+    target.class = type.class;
+    return target;
   }
 
   getNewPos(head) {
@@ -180,18 +226,24 @@ export default class App extends React.Component {
 
   move() {
     const head = this.queue[this.queue.length - 1];
-    if (head.toString() === this.target.toString()) {
+    if (head.toString() === this.target.pos.toString()) {
+      this.segmentsToAdd += this.target.segments;
+      this.score += this.difficultyToScore() * this.target.segments;
       this.target = this.getNewTarget();
-      this.score += this.difficultyToScore();
       if (this.score > this.highScore) {
         this.highScore = this.score;
       }
-    } else {
+    }
+
+    this.segmentsToAdd -= 1;
+    if (this.segmentsToAdd < 0) {
+      this.segmentsToAdd = 0;
       const tail = this.queue.shift();
       if (!this.set.delete(tail.toString())) {
         throw 'oops! set does not match queue';
       }
     }
+
     const newHead = this.getNewPos(head);
     if (!this.validPos(newHead)) {
       clearInterval(this.interval);
