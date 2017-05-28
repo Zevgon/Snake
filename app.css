@@ -6,7 +6,9 @@ body {
 
 .container {
   display: flex;
-  margin-top: 50px;
+  margin: 50px auto;
+  justify-content: space-between;
+  max-width: 900px;
 }
 
 .snake {
@@ -102,7 +104,6 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin: 0 auto;
   align-self: center;
 }
 
