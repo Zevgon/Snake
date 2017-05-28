@@ -1,5 +1,5 @@
 .snake {
-  background-color: orange;
+  background-color: red;
 }
 
 .empty {
@@ -20,8 +20,8 @@
 .grid {
   margin: 50px auto 0;
   border: 1px solid black;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

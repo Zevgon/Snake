@@ -14,10 +14,10 @@ const VALID_CHANGES = {
   'e': ['n', 's'],
 }
 
-const Row = ({i, snakeSet, width}) => {
+const Row = ({i, set, width}) => {
   let row = [];
   for (let j = 0; j < width; j++) {
-    if (snakeSet.has([i, j].toString())) {
+    if (set.has([i, j].toString())) {
       row.push((<div className="snake box"></div>));
     } else {
       row.push((<div className="empty box"></div>));
@@ -35,19 +35,71 @@ export default class App extends React.Component {
     super(props);
     this.direction = 'n';
     document.addEventListener('keydown', e => {
-      if (this.validDirection(DIRECTION_MAP[e.which])) {
-        this.direction = DIRECTION_MAP[e.which];
+      const dir = DIRECTION_MAP[e.which];
+      if (this.validDirection(dir)) {
+        this.direction = dir;
       }
     });
     this.state = {
-      curPos: [this.props.height, parseInt(this.props.width / 2, 10)],
       height: this.props.height,
       width: this.props.width,
     }
-    this.state['snakeQueue'] = [this.state.curPos];
-    this.state['snakeSet'] = new Set(this.state.snakeQueue.toString());
+    this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
+    this.set = new Set([this.queue[0].toString()]);
+
     this.createGrid = this.createGrid.bind(this);
     this.createRow = this.createRow.bind(this);
+    this.move = this.move.bind(this);
+    this.validPos = this.validPos.bind(this);
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(this.move, 200);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  getNewPos(head) {
+    switch (this.direction) {
+      case 'n':
+        return [head[0] - 1, head[1]];
+      case 's':
+        return [head[0] + 1, head[1]];
+      case 'e':
+        return [head[0], head[1] + 1];
+      case 'w':
+        return [head[0], head[1] - 1];
+      default:
+        throw 'Invalid direction!';
+    }
+  }
+
+  validPos(head) {
+    if (head[0] < 0 || head[0] >= this.state.height || head[1] < 0 || head[1] >= this.state.width) {
+      return false;
+    }
+    if (this.set.has(head.toString())) {
+      return false;
+    }
+    return true;
+  }
+
+  move() {
+    const head = this.queue[this.queue.length - 1];
+    const tail = this.queue.shift();
+    if (!this.set.delete(tail.toString())) {
+      throw 'oops! set does not match queue';
+    }
+    const newHead = this.getNewPos(head);
+    if (!this.validPos(newHead)) {
+      clearInterval(this.interval);
+      alert('Game over');
+    }
+    this.queue.push(newHead);
+    this.set.add(newHead.toString());
+    this.forceUpdate();
   }
 
   validDirection(newDir) {
@@ -56,7 +108,7 @@ export default class App extends React.Component {
 
   createRow(i) {
     return (
-      <Row i={i} snakeSet={this.state.snakeSet} width={this.state.width} />
+      <Row i={i} set={this.set} width={this.state.width} />
     );
   }
 
