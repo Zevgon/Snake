@@ -1,3 +1,28 @@
-.testing {
-  background-color: red;
+.snake {
+  background-color: orange;
+}
+
+.empty {
+  background-color: tan;
+}
+
+.box {
+  border: 1px solid black;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.grid {
+  margin: 50px auto 0;
+  border: 1px solid black;
+  width: 500px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
