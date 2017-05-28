@@ -207,6 +207,7 @@ export default class App extends React.Component {
       alert(message);
       this.setUp(false);
       document.getElementById('start').style.display = '';
+      this.forceUpdate();
     } else {
       this.queue.push(newHead);
       this.set.add(newHead.toString());
