@@ -35,35 +35,82 @@ const Row = ({i, set, width, target}) => {
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    this.direction = 'n';
-    document.addEventListener('keydown', e => {
-      const dir = DIRECTION_MAP[e.which];
-      if (this.validDirection(dir)) {
-        this.direction = dir;
-      }
-    });
-    this.state = {
-      height: this.props.height,
-      width: this.props.width,
-    }
-    this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
-    this.set = new Set([this.queue[0].toString()]);
-    this.allPositions = this.getAllPositions.bind(this)();
-    this.target = this.getNewTarget();
+    this.setUp = this.setUp.bind(this);
+    this.setUp(true);
 
     this.createGrid = this.createGrid.bind(this);
     this.createRow = this.createRow.bind(this);
     this.move = this.move.bind(this);
     this.validPos = this.validPos.bind(this);
     this.getNewTarget = this.getNewTarget.bind(this);
+    this.handleStart = this.handleStart.bind(this);
+    this.getSpeed = this.getSpeed.bind(this);
+    this.handleDifficultyChange = this.handleDifficultyChange.bind(this);
+    this.startMoving = this.startMoving.bind(this);
+    this.changeDifficulty = this.changeDifficulty.bind(this);
   }
 
-  componentDidMount() {
-    this.interval = setInterval(this.move, 200);
+  setUp(firstTime) {
+    this.direction = 'n';
+    document.addEventListener('keydown', e => {
+      e.preventDefault();
+      const dir = DIRECTION_MAP[e.which];
+      if (this.validDirection(dir)) {
+        this.direction = dir;
+      }
+    });
+    this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
+    this.set = new Set([this.queue[0].toString()]);
+    this.difficulties = [
+      {
+        name: 'Easy',
+        value: 80
+      },
+      {
+        name: 'Medium',
+        value: '120',
+      },
+      {
+        name: 'Hard',
+        value: '200',
+      },
+      {
+        name: 'Insane',
+        value: '300',
+      },
+    ]
+    if (firstTime) {
+      this.state = {
+        height: this.props.height,
+        width: this.props.width,
+        difficulty: '100',
+      }
+    } else {
+      this.setState({
+        height: this.props.height,
+        width: this.props.width,
+        difficulty: this.state.difficulty,
+      })
+    }
+    this.allPositions = this.getAllPositions.bind(this)();
+    this.target = this.getNewTarget();
   }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
+  getSpeed() {
+    if (this.state.difficulty !== '') {
+      const percent = parseInt(this.state.difficulty) / 100;
+      return 200 / percent;
+    }
+  }
+
+  startMoving() {
+    this.interval = setInterval(this.move, this.getSpeed());
+  }
+
+  handleStart(e) {
+    e.preventDefault();
+    e.currentTarget.style.display = 'none';
+    this.startMoving();
   }
 
   getAllPositions() {
@@ -130,11 +177,16 @@ export default class App extends React.Component {
     const newHead = this.getNewPos(head);
     if (!this.validPos(newHead)) {
       clearInterval(this.interval);
+      this.interval = null;
       alert('Game over');
+      this.setUp(false);
+      document.getElementById('start').style.display = '';
+      this.forceUpdate();
+    } else {
+      this.queue.push(newHead);
+      this.set.add(newHead.toString());
+      this.forceUpdate();
     }
-    this.queue.push(newHead);
-    this.set.add(newHead.toString());
-    this.forceUpdate();
   }
 
   validDirection(newDir) {
@@ -160,10 +212,48 @@ export default class App extends React.Component {
     return rows;
   }
 
+  handleDifficultyChange(e) {
+    e.preventDefault();
+    this.changeDifficulty(e.target.value);
+  }
+
+  changeDifficulty(newNum) {
+    this.setState({difficulty: newNum}, () => {
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+        this.startMoving();
+      }
+    });
+  }
+
+  getDifficultyButtons() {
+    return this.difficulties.map(diff => (
+      <button
+        className="difficulty-button"
+        onClick={this.handleDifficultyChange}
+        value={diff.value}
+      >{diff.name}</button>
+    ));
+  }
+
   render() {
     return(
-      <div className="grid">
-        {this.createGrid()}
+      <div className="container">
+        <div className="grid">
+          {this.createGrid()}
+          <button id="start" onClick={e => this.handleStart(e)}>Start</button>
+        </div>
+        <div className="select-difficulty">Select Difficulty:
+          {this.getDifficultyButtons()}
+          <input
+            id="difficulty"
+            type="number"
+            onChange={this.handleDifficultyChange}
+            value={this.state.difficulty}
+          >
+          </input>
+        </div>
       </div>
     );
   }

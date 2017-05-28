@@ -1,3 +1,8 @@
+.container {
+  display: flex;
+  margin-top: 50px;
+}
+
 .snake {
   background-color: red;
 }
@@ -18,10 +23,10 @@
 }
 
 .grid {
-  margin: 50px auto 0;
+  position: relative;
   border: 1px solid black;
-  width: 600px;
-  height: 600px;
+  width: 550px;
+  height: 550px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -29,4 +34,74 @@
 
 .target {
   background-color: blue;
+}
+
+#start {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 40px;
+    border-radius: 50px;
+    background-color: #47ae47;
+    font-size: 20px;
+    color: rgb(46, 46, 195);
+}
+
+#start:focus {
+  outline: none;
+}
+
+#difficulty {
+  display: block;
+  margin: 20px auto;
+  width: 200px;
+  height: 30px;
+  font-size: 20px;
+  text-align: center;
+  position: relative;
+  border: 2px solid black;
+}
+
+#difficulty:focus {
+  outline: none;
+}
+
+.select-difficulty {
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  width: 200px;
+  text-align: center;
+  justify-content: space-between;
+  height: 300px;
+  align-self: center;
+  font-size: 22px;
+}
+
+.difficulty-button {
+  height: 40px;
+  margin-top: 10px;
+  border-radius: 500px;
+  font-size: 18px;
+}
+
+.difficulty-button:focus {
+  outline: none;
+}
+
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: button;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    background: #eee url('http://i.stack.imgur.com/YYySO.png') no-repeat 50% 50%;
+    width: 14px;
+    height: 14px;
+    padding: 4px;
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translate(0%, -50%);
+    border-radius: 28px;
 }
