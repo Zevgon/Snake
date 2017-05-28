@@ -16,7 +16,7 @@ body {
 }
 
 .empty {
-  background-color: tan;
+  background-color: black;
 }
 
 .box {
@@ -52,9 +52,10 @@ body {
     width: 200px;
     height: 40px;
     border-radius: 50px;
-    background-color: #47ae47;
+    background-color: #5e5e5e;
     font-size: 20px;
-    color: rgb(46, 46, 195);
+    color: white;
+    border: 2px solid white;
 }
 
 #start:focus {
@@ -107,12 +108,12 @@ body {
   align-self: center;
 }
 
-.score-container {
+.high-score-container {
   margin: 0 auto;
   font-size: 23px;
 }
 
-.score {
+.high-score {
   text-align: center;
   margin-top: -17px;
   color: green;
@@ -133,4 +134,11 @@ input::-webkit-inner-spin-button {
     right: 4px;
     transform: translate(0%, -50%);
     border-radius: 28px;
+}
+
+.progress-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
 }

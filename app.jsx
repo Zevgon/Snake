@@ -81,6 +81,13 @@ export default class App extends React.Component {
     });
     this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
     this.set = new Set([this.queue[0].toString()]);
+    const highScore = localStorage.getItem('high score');
+    if (highScore) {
+      this.highScore = highScore;
+    } else {
+      localStorage.setItem('high score', 0);
+      this.highScore = 0;
+    }
     this.score = 0;
     if (firstTime) {
       this.state = {
@@ -176,6 +183,9 @@ export default class App extends React.Component {
     if (head.toString() === this.target.toString()) {
       this.target = this.getNewTarget();
       this.score += this.difficultyToScore();
+      if (this.score > this.highScore) {
+        this.highScore = this.score;
+      }
     } else {
       const tail = this.queue.shift();
       if (!this.set.delete(tail.toString())) {
@@ -186,10 +196,17 @@ export default class App extends React.Component {
     if (!this.validPos(newHead)) {
       clearInterval(this.interval);
       this.interval = null;
-      alert('Game over');
+      let message;
+      if (this.score > parseInt(localStorage.getItem('high score'))) {
+        message = `Congratulations! You just got a new high score of ${this.score}`;
+        localStorage.setItem('high score', this.score);
+      } else {
+        message = 'Game over';
+      }
+      this.forceUpdate();
+      alert(message);
       this.setUp(false);
       document.getElementById('start').style.display = '';
-      this.forceUpdate();
     } else {
       this.queue.push(newHead);
       this.set.add(newHead.toString());
@@ -253,9 +270,15 @@ export default class App extends React.Component {
   render() {
     return(
       <div className="container">
-        <div className="grid">
-          {this.createGrid()}
-          <button id="start" onClick={e => this.handleStart(e)}>Start</button>
+        <div className="game-area">
+          <div className="grid">
+            {this.createGrid()}
+            <button id="start" onClick={e => this.handleStart(e)}>Start</button>
+          </div>
+          <div className="progress-container">
+            <div className="score">Length: {this.queue.length}</div>
+            <div className="score">Score: {this.score}</div>
+          </div>
         </div>
         <div className="sidebar">
           <div className="select-difficulty">Select Difficulty:
@@ -268,8 +291,8 @@ export default class App extends React.Component {
               >
             </input>
           </div>
-          <div className="score-container">Score:
-            <div className="score">{this.score}</div>
+          <div className="high-score-container">High Score:
+            <div className="high-score">{this.highScore}</div>
           </div>
         </div>
       </div>

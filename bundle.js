@@ -9629,6 +9629,13 @@ var App = function (_React$Component) {
       });
       this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
       this.set = new Set([this.queue[0].toString()]);
+      var highScore = localStorage.getItem('high score');
+      if (highScore) {
+        this.highScore = highScore;
+      } else {
+        localStorage.setItem('high score', 0);
+        this.highScore = 0;
+      }
       this.score = 0;
       if (firstTime) {
         this.state = {
@@ -9736,6 +9743,9 @@ var App = function (_React$Component) {
       if (head.toString() === this.target.toString()) {
         this.target = this.getNewTarget();
         this.score += this.difficultyToScore();
+        if (this.score > this.highScore) {
+          this.highScore = this.score;
+        }
       } else {
         var tail = this.queue.shift();
         if (!this.set.delete(tail.toString())) {
@@ -9746,10 +9756,17 @@ var App = function (_React$Component) {
       if (!this.validPos(newHead)) {
         clearInterval(this.interval);
         this.interval = null;
-        alert('Game over');
+        var message = void 0;
+        if (this.score > parseInt(localStorage.getItem('high score'))) {
+          message = 'Congratulations! You just got a new high score of ' + this.score;
+          localStorage.setItem('high score', this.score);
+        } else {
+          message = 'Game over';
+        }
+        this.forceUpdate();
+        alert(message);
         this.setUp(false);
         document.getElementById('start').style.display = '';
-        this.forceUpdate();
       } else {
         this.queue.push(newHead);
         this.set.add(newHead.toString());
@@ -9831,14 +9848,34 @@ var App = function (_React$Component) {
         { className: 'container' },
         _react2.default.createElement(
           'div',
-          { className: 'grid' },
-          this.createGrid(),
+          { className: 'game-area' },
           _react2.default.createElement(
-            'button',
-            { id: 'start', onClick: function onClick(e) {
-                return _this6.handleStart(e);
-              } },
-            'Start'
+            'div',
+            { className: 'grid' },
+            this.createGrid(),
+            _react2.default.createElement(
+              'button',
+              { id: 'start', onClick: function onClick(e) {
+                  return _this6.handleStart(e);
+                } },
+              'Start'
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'progress-container' },
+            _react2.default.createElement(
+              'div',
+              { className: 'score' },
+              'Length: ',
+              this.queue.length
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'score' },
+              'Score: ',
+              this.score
+            )
           )
         ),
         _react2.default.createElement(
@@ -9858,12 +9895,12 @@ var App = function (_React$Component) {
           ),
           _react2.default.createElement(
             'div',
-            { className: 'score-container' },
-            'Score:',
+            { className: 'high-score-container' },
+            'High Score:',
             _react2.default.createElement(
               'div',
-              { className: 'score' },
-              this.score
+              { className: 'high-score' },
+              this.highScore
             )
           )
         )
