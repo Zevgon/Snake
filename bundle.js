@@ -9554,16 +9554,16 @@ var VALID_CHANGES = {
 
 var DIFFICULTIES = [{
   name: 'Easy',
-  value: 80
-}, {
-  name: 'Medium',
   value: '120'
 }, {
+  name: 'Medium',
+  value: '180'
+}, {
   name: 'Hard',
-  value: '200'
+  value: '250'
 }, {
   name: 'Insane',
-  value: '300'
+  value: '350'
 }];
 
 var Row = function Row(_ref) {
@@ -9641,7 +9641,7 @@ var App = function (_React$Component) {
         this.state = {
           height: this.props.height,
           width: this.props.width,
-          difficulty: '100'
+          difficulty: '150'
         };
       } else {
         this.setState({
@@ -9886,12 +9886,21 @@ var App = function (_React$Component) {
             { className: 'select-difficulty' },
             'Select Difficulty:',
             this.getDifficultyButtons(),
-            _react2.default.createElement('input', {
-              id: 'difficulty',
-              type: 'number',
-              onChange: this.handleDifficultyChange,
-              value: this.state.difficulty
-            })
+            _react2.default.createElement(
+              'div',
+              { className: 'custom-difficulty-container' },
+              _react2.default.createElement(
+                'div',
+                { className: 'custom-difficulty' },
+                'Custom Difficulty:'
+              ),
+              _react2.default.createElement('input', {
+                id: 'difficulty',
+                type: 'number',
+                onChange: this.handleDifficultyChange,
+                value: this.state.difficulty
+              })
+            )
           ),
           _react2.default.createElement(
             'div',
@@ -9943,7 +9952,7 @@ var _app2 = _interopRequireDefault(_app);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
-  (0, _reactDom.render)(_react2.default.createElement(_app2.default, { height: 21, width: 21 }), document.getElementById('snake'));
+  (0, _reactDom.render)(_react2.default.createElement(_app2.default, { height: 27, width: 27 }), document.getElementById('snake'));
 });
 
 /***/ }),

@@ -17,19 +17,19 @@ const VALID_CHANGES = {
 const DIFFICULTIES = [
   {
     name: 'Easy',
-    value: 80
-  },
-  {
-    name: 'Medium',
     value: '120',
   },
   {
+    name: 'Medium',
+    value: '180',
+  },
+  {
     name: 'Hard',
-    value: '200',
+    value: '250',
   },
   {
     name: 'Insane',
-    value: '300',
+    value: '350',
   },
 ]
 
@@ -93,7 +93,7 @@ export default class App extends React.Component {
       this.state = {
         height: this.props.height,
         width: this.props.width,
-        difficulty: '100',
+        difficulty: '150',
       }
     } else {
       this.setState({
@@ -283,13 +283,16 @@ export default class App extends React.Component {
         <div className="sidebar">
           <div className="select-difficulty">Select Difficulty:
             {this.getDifficultyButtons()}
-            <input
-              id="difficulty"
-              type="number"
-              onChange={this.handleDifficultyChange}
-              value={this.state.difficulty}
-              >
-            </input>
+            <div className="custom-difficulty-container">
+              <div className="custom-difficulty">Custom Difficulty:</div>
+              <input
+                id="difficulty"
+                type="number"
+                onChange={this.handleDifficultyChange}
+                value={this.state.difficulty}
+                >
+              </input>
+            </div>
           </div>
           <div className="high-score-container">High Score:
             <div className="high-score">{this.highScore}</div>

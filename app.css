@@ -1,8 +1,15 @@
 body {
   font-family: sans-serif;
   box-sizing: border-box;
+  background-color: rgb(22, 50, 76);
+  color: white;
 }
 
+button {
+  color: white;
+  background-color: #5e5e5e;
+  border: 2px solid white;
+}
 
 .container {
   display: flex;
@@ -64,8 +71,6 @@ body {
 
 #difficulty {
   display: block;
-  margin: 20px auto;
-  width: 200px;
   height: 30px;
   font-size: 20px;
   text-align: center;
@@ -123,7 +128,7 @@ body {
 
 input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
-    -webkit-appearance: button;
+    -webkit-appearance: none;
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
     background: #eee url('http://i.stack.imgur.com/YYySO.png') no-repeat 50% 50%;
     width: 14px;
@@ -141,4 +146,15 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
   align-items: center;
   height: 40px;
+}
+
+.custom-difficulty {
+  font-size: 15px;
+}
+
+.custom-difficulty-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 15px;
 }
