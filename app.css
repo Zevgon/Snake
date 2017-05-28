@@ -1,3 +1,9 @@
+body {
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+
 .container {
   display: flex;
   margin-top: 50px;
@@ -62,6 +68,7 @@
   text-align: center;
   position: relative;
   border: 2px solid black;
+  border-radius: 200px;
 }
 
 #difficulty:focus {
@@ -70,7 +77,6 @@
 
 .select-difficulty {
   display: flex;
-  margin: 0 auto;
   flex-direction: column;
   width: 200px;
   text-align: center;
@@ -89,6 +95,26 @@
 
 .difficulty-button:focus {
   outline: none;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
+.score-container {
+  margin: 0 auto;
+  font-size: 23px;
+}
+
+.score {
+  text-align: center;
+  margin-top: -17px;
+  color: green;
+  font-family: cursive;
+  font-size: 48px;
 }
 
 input::-webkit-inner-spin-button {

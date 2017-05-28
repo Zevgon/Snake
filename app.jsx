@@ -14,6 +14,25 @@ const VALID_CHANGES = {
   'e': ['n', 's'],
 }
 
+const DIFFICULTIES = [
+  {
+    name: 'Easy',
+    value: 80
+  },
+  {
+    name: 'Medium',
+    value: '120',
+  },
+  {
+    name: 'Hard',
+    value: '200',
+  },
+  {
+    name: 'Insane',
+    value: '300',
+  },
+]
+
 const Row = ({i, set, width, target}) => {
   let row = [];
   for (let j = 0; j < width; j++) {
@@ -48,37 +67,21 @@ export default class App extends React.Component {
     this.handleDifficultyChange = this.handleDifficultyChange.bind(this);
     this.startMoving = this.startMoving.bind(this);
     this.changeDifficulty = this.changeDifficulty.bind(this);
+    this.difficultyToScore = this.difficultyToScore.bind(this);
   }
 
   setUp(firstTime) {
     this.direction = 'n';
     document.addEventListener('keydown', e => {
-      e.preventDefault();
       const dir = DIRECTION_MAP[e.which];
       if (this.validDirection(dir)) {
+        e.preventDefault();
         this.direction = dir;
       }
     });
     this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
     this.set = new Set([this.queue[0].toString()]);
-    this.difficulties = [
-      {
-        name: 'Easy',
-        value: 80
-      },
-      {
-        name: 'Medium',
-        value: '120',
-      },
-      {
-        name: 'Hard',
-        value: '200',
-      },
-      {
-        name: 'Insane',
-        value: '300',
-      },
-    ]
+    this.score = 0;
     if (firstTime) {
       this.state = {
         height: this.props.height,
@@ -164,10 +167,15 @@ export default class App extends React.Component {
     return true;
   }
 
+  difficultyToScore() {
+    return parseInt(this.state.difficulty / 10);
+  }
+
   move() {
     const head = this.queue[this.queue.length - 1];
     if (head.toString() === this.target.toString()) {
       this.target = this.getNewTarget();
+      this.score += this.difficultyToScore();
     } else {
       const tail = this.queue.shift();
       if (!this.set.delete(tail.toString())) {
@@ -228,7 +236,7 @@ export default class App extends React.Component {
   }
 
   getDifficultyButtons() {
-    return this.difficulties.map(diff => (
+    return DIFFICULTIES.map(diff => (
       <button
         className="difficulty-button"
         onClick={this.handleDifficultyChange}
@@ -244,15 +252,20 @@ export default class App extends React.Component {
           {this.createGrid()}
           <button id="start" onClick={e => this.handleStart(e)}>Start</button>
         </div>
-        <div className="select-difficulty">Select Difficulty:
-          {this.getDifficultyButtons()}
-          <input
-            id="difficulty"
-            type="number"
-            onChange={this.handleDifficultyChange}
-            value={this.state.difficulty}
-          >
-          </input>
+        <div className="sidebar">
+          <div className="select-difficulty">Select Difficulty:
+            {this.getDifficultyButtons()}
+            <input
+              id="difficulty"
+              type="number"
+              onChange={this.handleDifficultyChange}
+              value={this.state.difficulty}
+              >
+            </input>
+          </div>
+          <div className="score-container">Score:
+            <div className="score">{this.score}</div>
+          </div>
         </div>
       </div>
     );
