@@ -14,11 +14,13 @@ const VALID_CHANGES = {
   'e': ['n', 's'],
 }
 
-const Row = ({i, set, width}) => {
+const Row = ({i, set, width, target}) => {
   let row = [];
   for (let j = 0; j < width; j++) {
     if (set.has([i, j].toString())) {
       row.push((<div className="snake box"></div>));
+    } else if ([i, j].toString() === target.toString()) {
+      row.push((<div className="target box"></div>));
     } else {
       row.push((<div className="empty box"></div>));
     }
@@ -46,11 +48,14 @@ export default class App extends React.Component {
     }
     this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
     this.set = new Set([this.queue[0].toString()]);
+    this.allPositions = this.getAllPositions.bind(this)();
+    this.target = this.getTarget();
 
     this.createGrid = this.createGrid.bind(this);
     this.createRow = this.createRow.bind(this);
     this.move = this.move.bind(this);
     this.validPos = this.validPos.bind(this);
+    this.getTarget = this.getTarget.bind(this);
   }
 
   componentDidMount() {
@@ -59,6 +64,32 @@ export default class App extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.interval);
+  }
+
+  getAllPositions() {
+    let all = [];
+    for (let i = 0; i < this.state.height; i++) {
+      for (let j = 0; j < this.state.width; j++) {
+        all.push([i, j]);
+      }
+    }
+    return all;
+  }
+
+  getValidPoses() {
+    let valids = [];
+    this.allPositions.forEach(pos => {
+      if (!this.set.has(pos.toString())) {
+        valids.push(pos);
+      }
+    });
+    return valids;
+  }
+
+  getTarget() {
+    const validPoses = this.getValidPoses();
+    const randIdx = parseInt(Math.random() * validPoses.length);
+    return validPoses[randIdx];
   }
 
   getNewPos(head) {
@@ -108,7 +139,12 @@ export default class App extends React.Component {
 
   createRow(i) {
     return (
-      <Row i={i} set={this.set} width={this.state.width} />
+      <Row
+        i={i}
+        set={this.set}
+        width={this.state.width}
+        target={this.target}
+      />
     );
   }
 
