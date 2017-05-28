@@ -49,13 +49,13 @@ export default class App extends React.Component {
     this.queue = [[this.props.height - 1, parseInt(this.props.width / 2, 10)]];
     this.set = new Set([this.queue[0].toString()]);
     this.allPositions = this.getAllPositions.bind(this)();
-    this.target = this.getTarget();
+    this.target = this.getNewTarget();
 
     this.createGrid = this.createGrid.bind(this);
     this.createRow = this.createRow.bind(this);
     this.move = this.move.bind(this);
     this.validPos = this.validPos.bind(this);
-    this.getTarget = this.getTarget.bind(this);
+    this.getNewTarget = this.getNewTarget.bind(this);
   }
 
   componentDidMount() {
@@ -86,7 +86,7 @@ export default class App extends React.Component {
     return valids;
   }
 
-  getTarget() {
+  getNewTarget() {
     const validPoses = this.getValidPoses();
     const randIdx = parseInt(Math.random() * validPoses.length);
     return validPoses[randIdx];
@@ -119,9 +119,13 @@ export default class App extends React.Component {
 
   move() {
     const head = this.queue[this.queue.length - 1];
-    const tail = this.queue.shift();
-    if (!this.set.delete(tail.toString())) {
-      throw 'oops! set does not match queue';
+    if (head.toString() === this.target.toString()) {
+      this.target = this.getNewTarget();
+    } else {
+      const tail = this.queue.shift();
+      if (!this.set.delete(tail.toString())) {
+        throw 'oops! set does not match queue';
+      }
     }
     const newHead = this.getNewPos(head);
     if (!this.validPos(newHead)) {
