@@ -98,10 +98,12 @@ body {
 }
 
 .sidebar {
+  height: 443px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   margin: 0 auto;
+  align-self: center;
 }
 
 .score-container {

@@ -226,10 +226,15 @@ export default class App extends React.Component {
   }
 
   changeDifficulty(newNum) {
+    const oldDifficultyInt = parseInt(this.state.difficulty);
     this.setState({difficulty: newNum}, () => {
       if (this.interval) {
         clearInterval(this.interval);
         this.interval = null;
+        if (parseInt(this.state.difficulty) < oldDifficultyInt) {
+          this.score *= this.state.difficulty / oldDifficultyInt;
+          this.score = parseInt(this.score);
+        }
         this.startMoving();
       }
     });
